@@ -1,10 +1,11 @@
 require 'rubygems'
-Gem.all_load_paths
-gem "thoughtbot-shoulda"
+if RUBY_VERSION =~ /1\.9/
+  Gem.all_load_paths
+  gem "thoughtbot-shoulda"
+  gem "xmpp4r"
+end
 require 'test/unit'
 require 'shoulda'
-#require 'mocha'
-gem "xmpp4r"
 require File.join(File.dirname(__FILE__), '../lib/jabbot')
 
 module Test::Unit::Assertions
