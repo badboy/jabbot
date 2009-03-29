@@ -4,13 +4,14 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "jabbot_test"
-    gem.summary = %Q{TODO}
-    gem.email = "psp.badboy@gmail.com"
-    gem.homepage = "http://github.com/badboy/jabbot_test"
+    gem.name = "jabbot"
+    gem.summary = %Q{Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot}
+    gem.email = "badboy@archlinux.us"
+    gem.homepage = "http://github.com/badboy/jabbot"
     gem.authors = ["BadBoy_"]
-
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_dependency('xmpp4r', '>=0.4')
+    gem.add_development_dependency('thoughtbot-shoulda', '>=2.10.1')
+    gem.add_development_dependency('technicalpickles-jeweler', '>=0.10.2')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

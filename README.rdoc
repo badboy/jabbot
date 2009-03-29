@@ -88,14 +88,14 @@ Jabbot also supports regular expressions as routes:
 
 xmpp4r. You'll need atleast 0.4.
 You can get it via rubygems:
- $ gem install xmpp4r
+ gem install xmpp4r
 or download it from:
- http://home.gna.org/xmpp4r/
+http://home.gna.org/xmpp4r/
 
 == Installation
 
- $ gem sources -a http://gems.github.com  # you only have to do this once
- $ gem install badboy-jabbot --source 
+ gem sources -a http://gems.github.com  # you only have to do this once
+ gem install badboy-jabbot
 
 == Is it Ruby 1.9?
 
@@ -104,7 +104,7 @@ Seems like it works :)
 
 == Contributors
 
-* Christian Johansen (cjohansen) (author of Twibot) - http://www.cjohansen.no/
+* Christian Johansen (cjohansen) (author of Twibot) - http://www.cjohansen.no
 
 == License
 
