@@ -10,6 +10,9 @@ I modified the code of Twibot to fit my needs.
 The original Twibot code is located at:
 http://github.com/cjohansen/twibot/tree/master
 
+A big thank you to Christian Johansen, who wrote the code for Twibot.
+Jabbot is heavily based on his code.
+
 == Usage
 
 === Simple example
