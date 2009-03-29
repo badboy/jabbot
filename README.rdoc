@@ -4,7 +4,7 @@ Jan-Erik Rediger (BadBoy_) (http://badboy.pytalhost.de)
 
 == Description
 
-Jabbot (pronounced like "Abbot"), is a Ruby microframework for creating Jabber/MUC
+Jabbot is a Ruby microframework for creating Jabber/MUC
 bots, heavily inspired by Sinatra and Twibot.
 I modified the code of Twibot to fit my needs.
 The original Twibot code is located at:
