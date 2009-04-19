@@ -63,6 +63,10 @@ You can also configure with Ruby:
   do
 
 If you don't specify login and/or password in any of these ways, Jabbot will fail
+Nick is automatically set to "jabbot" unless something different is defined
+If you want you can set the Jabber Resource:
+  conf.resource ="mybot_resource"
+Otherwise it is set to "jabbot", too
 
 === "Routes"
 
