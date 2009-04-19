@@ -20,11 +20,14 @@ module Jabbot
     attr_reader :settings
 
     DEFAULT = {
-      :log_level => "info",
+      :log_level => 'info',
       :log_file => nil,
       :login => nil,
       :password => nil,
-      :daemonize => false # not yet used!
+      :nick => 'jabbot',
+      :channel => nil,
+      :server => nil,
+      :resource => nil
     }
 
     def initialize(settings = {})

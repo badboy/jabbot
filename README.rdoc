@@ -53,11 +53,13 @@ atleast:
   password: jabber_password
   channel: channel_to_join
   server: server_to_connect_to
+  nick: mybot
 
 You can also configure with Ruby:
 
   configure do |conf|
     conf.login = "my_account"
+    conf.nick = "mybot"
   do
 
 If you don't specify login and/or password in any of these ways, Jabbot will fail

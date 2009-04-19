@@ -11,10 +11,10 @@ begin
     gem.authors = ["BadBoy_"]
     gem.add_dependency('xmpp4r', '>=0.4')
     gem.add_development_dependency('thoughtbot-shoulda', '>=2.10.1')
-    gem.add_development_dependency('technicalpickles-jeweler', '>=0.10.2')
+    gem.add_development_dependency('jeweler', '>=0.10.2')
   end
 rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+  puts "Jeweler not available. Install it with: sudo gem install jeweler"
 end
 
 require 'rake/testtask'

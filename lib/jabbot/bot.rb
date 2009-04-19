@@ -44,8 +44,8 @@ module Jabbot
       elsif @mucjid.resource
         raise "The MUC room must not contain a resource. Remove the slash!"
       else
-        @jid.resource = "jabbot1"
-        @mucjid.resource = (config[:nick]||="jabbot")
+        @jid.resource = config[:resource] || "jabbot"
+        @mucjid.resource = config[:nick] || "jabbot"
         @user << config[:nick]
       end
 
