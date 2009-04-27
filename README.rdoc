@@ -106,6 +106,9 @@ http://home.gna.org/xmpp4r/
  gem sources -a http://gems.github.com  # you only have to do this once
  gem install badboy-jabbot
 
+Or if you want don't like to install from github, Jabbot is available on Rubyforge, too ;)
+ gem install jabbot
+
 == Is it Ruby 1.9?
 
 All tests passes even on Ruby 1.9.
