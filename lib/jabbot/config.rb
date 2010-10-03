@@ -27,7 +27,8 @@ module Jabbot
       :nick => 'jabbot',
       :channel => nil,
       :server => nil,
-      :resource => nil
+      :resource => nil,
+      :debug => false
     }
 
     def initialize(settings = {})

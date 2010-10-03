@@ -28,6 +28,15 @@ module Jabbot
       raise SystemExit.new(krash.message)
     end
 
+    # Enable debugging mode.
+    # All xmpp4r-internal calls to Jabber::Debuglog are
+    # printed to $stderr by default.
+    # You may change the logger by using
+    #   Jabber::Logger = Logger.new(…)
+    def debug!
+      Jabber::debug = true
+    end
+
     #
     # connect to Jabber and join channel
     #
@@ -74,6 +83,7 @@ module Jabbot
         exit
       end
 
+      debug! if config[:debug]
       connect
       poll
     end
