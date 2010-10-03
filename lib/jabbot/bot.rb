@@ -213,7 +213,6 @@ module Jabbot
       @conf = nil
     end
 
-   private
     #
     # Map configuration settings
     #
