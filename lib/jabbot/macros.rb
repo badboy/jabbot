@@ -26,7 +26,7 @@ module Jabbot
     def join(options = {}, &blk)
       add_handler(:join, /\Ajoin\Z/, options, &blk)
     end
-    
+
     def leave(options = {}, &blk)
       add_handler(:leave, /\Aleave\Z/, options, &blk)
     end

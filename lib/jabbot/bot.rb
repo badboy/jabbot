@@ -155,7 +155,7 @@ module Jabbot
             end
           end
         end
-        
+
         muc.on_leave do |time, nick|
           @user.delete(nick)
           if time.nil?
@@ -167,7 +167,7 @@ module Jabbot
             end
           end
         end
-        
+
         muc.on_subject do |time, nick, subject|
           if time.nil?
             begin
