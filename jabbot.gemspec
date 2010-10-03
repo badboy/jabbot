@@ -1,64 +1,35 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{jabbot}
-  s.version = "0.1.2"
+  s.name           = "jabbot"
+  s.version        = "0.2.0"
+  s.date           = "2010-10-03"
+  s.summary        = "A small wrapper DSL for dzen2's in-text formatting"
+  s.summary        = "Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot"
+  s.homepage       = "http://github.com/badboy/jabbot"
+  s.email          = "badboy@archlinux.us"
+  s.authors        = ["badboy"]
+  s.has_rdoc       = false
+  s.require_path   = "lib"
+  s.files          = %w( README.md Rakefile LICENSE )
+  s.files         += Dir.glob("lib/**/*")
+  s.files         += Dir.glob("test/**/*")
+  s.description    = <<-desc
+  Jabbot is a Ruby micro-framework for creating Jabber/MUC bots,
+  heavily inspired by Sinatra and Twibot.
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["BadBoy_"]
-  s.date = %q{2009-04-27}
-  s.email = %q{badboy@archlinux.us}
-  s.extra_rdoc_files = [
-    "README.rdoc"
-  ]
-  s.files = [
-    "README.rdoc",
-    "Rakefile",
-    "VERSION.yml",
-    "lib/hash.rb",
-    "lib/jabbot.rb",
-    "lib/jabbot/bot.rb",
-    "lib/jabbot/config.rb",
-    "lib/jabbot/handlers.rb",
-    "lib/jabbot/macros.rb",
-    "lib/jabbot/message.rb",
-    "test/test_bot.rb",
-    "test/test_config.rb",
-    "test/test_handler.rb",
-    "test/test_hash.rb",
-    "test/test_helper.rb"
-  ]
-  s.has_rdoc = true
-  s.homepage = %q{http://github.com/badboy/jabbot}
-  s.rdoc_options = ["--charset=UTF-8"]
-  s.require_paths = ["lib"]
-  s.rubyforge_project = %q{jabbot}
-  s.rubygems_version = %q{1.3.2}
-  s.summary = %q{Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot}
-  s.test_files = [
-    "test/test_helper.rb",
-    "test/test_bot.rb",
-    "test/test_hash.rb",
-    "test/test_config.rb",
-    "test/test_handler.rb"
-  ]
+  I modified the code of Twibot to fit my needs.
+  The original Twibot code is located at:
+  http://github.com/cjohansen/twibot/tree/master
 
-  if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 3
+  A big thank you to Christian Johansen, who wrote the code for Twibot.
+  Jabbot is heavily based on his code.
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<xmpp4r>, [">= 0.4"])
-      s.add_development_dependency(%q<thoughtbot-shoulda>, [">= 2.10.1"])
-      s.add_development_dependency(%q<jeweler>, [">= 0.10.2"])
-    else
-      s.add_dependency(%q<xmpp4r>, [">= 0.4"])
-      s.add_dependency(%q<thoughtbot-shoulda>, [">= 2.10.1"])
-      s.add_dependency(%q<jeweler>, [">= 0.10.2"])
+  It's as easy as definig a small message handler:
+    message do |message, params|
+      post message.text
     end
-  else
-    s.add_dependency(%q<xmpp4r>, [">= 0.4"])
-    s.add_dependency(%q<thoughtbot-shoulda>, [">= 2.10.1"])
-    s.add_dependency(%q<jeweler>, [">= 0.10.2"])
-  end
+  desc
+  s.add_dependency('xmpp4r', '>=0.4')
+  s.add_development_dependency('shoulda', '>=2.10.1')
 end
