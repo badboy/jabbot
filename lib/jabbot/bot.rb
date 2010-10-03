@@ -9,7 +9,7 @@ module Jabbot
   class Bot
     include Jabbot::Handlers
     attr_reader :client
-    attr_reader :user
+    attr_reader :users
 
     Message = Struct.new(:user, :text, :time) do
       def to_s
@@ -22,7 +22,7 @@ module Jabbot
       @config = options || Jabbot::Config.default << Jabbot::FileConfig.new
       @log = nil
       @abort = false
-      @user = []
+      @users = []
 
     rescue Exception => krash
       raise SystemExit.new(krash.message)
@@ -46,7 +46,7 @@ module Jabbot
       else
         @jid.resource = config[:resource] || "jabbot"
         @mucjid.resource = config[:nick] || "jabbot"
-        @user << config[:nick]
+        @users << config[:nick]
       end
 
       @client = Jabber::Client.new(@jid)
@@ -143,8 +143,8 @@ module Jabbot
         end
 
         muc.on_join do |time, nick|
-          unless @user.include? nick
-            @user << nick
+          unless @users.include? nick
+            @users << nick
           end
           if time.nil?
             begin
@@ -157,7 +157,7 @@ module Jabbot
         end
 
         muc.on_leave do |time, nick|
-          @user.delete(nick)
+          @users.delete(nick)
           if time.nil?
             begin
               dispatch_messages(:leave, [Message.new(nick, "leave", Time.now)])
