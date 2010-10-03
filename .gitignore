@@ -2,3 +2,5 @@
 *~
 pkg
 rdoc
+samples/_config.rb
+dist
