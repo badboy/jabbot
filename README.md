@@ -1,8 +1,5 @@
 # Jabbot
 
-Official URL: http://github.com/badboy/jabbot/tree/master
-Jan-Erik Rediger (badboy\_) (http://badboy.pytalhost.de)
-
 ## Description
 
 Jabbot is a Ruby micro-framework for creating Jabber/MUC bots,
