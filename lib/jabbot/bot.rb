@@ -59,6 +59,13 @@ module Jabbot
       end
 
       @client = Jabber::Client.new(@jid)
+      @client.on_exception do |*args|
+        $stderr.puts "got an intern EXCEPTION, args where:"
+        $stderr.puts args.inspect
+        $stderr.puts "exiting..."
+
+        exit
+      end
       @connected = true
       begin
         @client.connect
