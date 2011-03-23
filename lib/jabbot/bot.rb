@@ -74,7 +74,7 @@ module Jabbot
         muc_handlers.call(@muc)
         @muc.join(@mucjid)
        rescue => errmsg
-        STDERR.write "#{errmsg.class}\n#{errmsg}, #{errmsg.backtrace.join("\n")}"
+        $stderr.write "#{errmsg.class}\n#{errmsg}, #{errmsg.backtrace.join("\n")}"
         exit 1
       end
     end
