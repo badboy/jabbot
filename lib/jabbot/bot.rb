@@ -85,10 +85,14 @@ module Jabbot
     def run!
       puts "Jabbot #{Jabbot::VERSION} imposing as #{login} on #{channel}@#{server}"
 
-      trap(:INT) do
+      onclose_block = proc {
+        close
         puts "\nAnd it's a wrap. See ya soon!"
         exit
-      end
+      }
+
+      Kernel.trap(:INT, onclose_block)
+      Kernel.trap(:QUIT, onclose_block)
 
       debug! if config[:debug]
       connect
