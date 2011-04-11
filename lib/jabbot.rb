@@ -10,10 +10,10 @@ require 'jabbot/bot.rb'
 require 'jabbot/config.rb'
 require 'jabbot/handlers.rb'
 require 'jabbot/macros.rb'
-require 'jabbot/message.rb'
-require 'jabbot/version.rb'
 
 module Jabbot
+  VERSION = '0.2.0'
+
   @@app_file = lambda do
     ignore = [
       /lib\/twibot.*\.rb/, # Library
