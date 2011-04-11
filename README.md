@@ -12,6 +12,10 @@ http://github.com/cjohansen/twibot/tree/master
 A big thank you to Christian Johansen, who wrote the code for Twibot.
 Jabbot is heavily based on his code.
 
+If your curious if this code is stable enough:
+I have a bot instance running on my server for quite some time now
+and it works great :)
+
 ## Usage
 
 ### Simple example
@@ -22,8 +26,8 @@ Jabbot is heavily based on his code.
     end
 
     # Respond to query if they come from the right crowd
-    # post "message" => "user" is just some syntax sugar
-    # post "message", "user" will work to
+    # query "message" => "user" is just some syntax sugar
+    # query "message", "user" will work to
     query :from => [:cjno, :irbno] do |message, params|
       post "#{message.user} I agree" => message.user
     end
@@ -62,11 +66,10 @@ You can also configure with Ruby:
 
 If you don't specify login and/or password in any of these ways, Jabbot will fail
 Nick is automatically set to "jabbot" unless something different is defined
-If you want you can set the Jabber Resource:
+If you want you can set the XMPP Resource:
 
     configure do |conf|
       conf.resource ="mybot_resource"
-
     end
 
 Default is "jabbot".
@@ -74,7 +77,7 @@ Default is "jabbot".
 ### "Routes"
 
 Like Sinatra, and other web app frameworks, Jabbot supports "routes":
-patterns to match incoming tweets and messages:
+patterns to match incoming messages:
 
     message "time :country :city" do |message, params|
       time = MyTimeService.lookup(params[:country], params[:city])
