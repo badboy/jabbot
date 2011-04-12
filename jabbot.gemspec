@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |s|
   s.name           = "jabbot"
-  s.version        = "0.3.0"
-  s.date           = "2010-10-03"
+  s.version        = "0.3.1"
+  s.date           = "2011-04-12"
   s.summary        = "Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot"
   s.homepage       = "http://github.com/badboy/jabbot"
   s.email          = "badboy@archlinux.us"
