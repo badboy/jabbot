@@ -186,4 +186,16 @@ context "Handler" do
     assert handler.recognize?(message)
     handler.dispatch(message)
   end
+
+  test "recognize matching messages with :exact pattern" do
+    handler = Jabbot::Handler.new :exact => "!pattern"
+    message = mock_message "dude", "!pattern"
+    assert handler.recognize?(message)
+  end
+
+  test "not recognize non-matching message with :exact patterns" do
+    handler = Jabbot::Handler.new :exact => "!pattern"
+    message = mock_message "dude", "   !pattern    "
+    assert !handler.recognize?(message)
+  end
 end
