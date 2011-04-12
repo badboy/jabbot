@@ -2,9 +2,8 @@
 
 Gem::Specification.new do |s|
   s.name           = "jabbot"
-  s.version        = "0.2.0"
+  s.version        = "0.3.0"
   s.date           = "2010-10-03"
-  s.summary        = "A small wrapper DSL for dzen2's in-text formatting"
   s.summary        = "Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot"
   s.homepage       = "http://github.com/badboy/jabbot"
   s.email          = "badboy@archlinux.us"
@@ -30,6 +29,7 @@ Gem::Specification.new do |s|
       post message.text
     end
   desc
+
   s.add_dependency('xmpp4r', '>=0.4')
   s.add_development_dependency('shoulda', '>=2.10.1')
 end
