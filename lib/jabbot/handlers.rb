@@ -9,7 +9,7 @@ module Jabbot
     end
 
     def dispatch(type, message)
-      handlers[type].each { |handler| handler.dispatch(message) }
+      handlers[type].each {|handler| handler.dispatch(message) }
     end
 
     def handlers
@@ -39,7 +39,7 @@ module Jabbot
       end
 
       @options = options
-      @options[:from].collect! { |s| s.to_s } if @options[:from] && @options[:from].is_a?(Array)
+      @options[:from].collect! {|s| s.to_s } if @options[:from] && @options[:from].is_a?(Array)
       @options[:from] = [@options[:from].to_s] if @options[:from] && [String, Symbol].include?(@options[:from].class)
       @handler = nil
       @handler = block_given? ? blk : nil
@@ -50,21 +50,17 @@ module Jabbot
     # Parse pattern string and set options
     #
     def pattern=(pattern)
-      return if pattern.nil? || pattern == ""
-
-      if pattern == :all
-        return
-      end
+      return if pattern.nil? || pattern == '' || pattern == :all
 
       if pattern.is_a?(Regexp)
         @options[:pattern] = pattern
         return
       end
 
-      words = pattern.split.collect { |s| s.strip }          # Get all words in pattern
+      words = pattern.split.collect {|s| s.strip }            # Get all words in pattern
       @options[:tokens] = words.inject([]) do |sum, token|   # Find all tokens, ie :symbol :like :names
         next sum unless token =~ /^:.*/                      # Don't process regular words
-        sym = token.sub(":", "").to_sym                      # Turn token string into symbol, ie ":token" => :token
+        sym = token.sub(':', '').to_sym                      # Turn token string into symbol, ie ":token" => :token
         regex = @options[sym] || '[^\s]+'                    # Fetch regex if configured, else use any character but space matching
         pattern.sub!(/(^|\s)#{token}(\s|$)/, '\1(' + regex.to_s + ')\2') # Make sure regex captures named switch
         sum << sym
