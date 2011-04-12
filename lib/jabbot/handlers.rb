@@ -34,8 +34,12 @@ module Jabbot
   class Handler
     def initialize(pattern = nil, options = {}, &blk)
       if pattern.is_a?(Hash)
-        options = pattern
-        pattern = nil
+        if pattern.keys.first == :exact
+          pattern = /\A#{pattern[:exact]}\Z/
+        else
+          options = pattern
+          pattern = nil
+        end
       end
 
       @options = options
