@@ -95,6 +95,14 @@ Jabbot also supports regular expressions as routes:
       post "Time is #{time} in #{params[:city]}, #{params[:country]}"
     end
 
+If all you need is exact word matching you can say so:
+
+    message :exact => "pattern" do |message, params|
+      ...
+    end
+
+Internally this pattern is translated to `/\Apattern\Z/`, so you can use regex literals.
+
 ## Requirements
 
 xmpp4r. You'll need atleast 0.4.

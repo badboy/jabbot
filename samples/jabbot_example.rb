@@ -27,6 +27,11 @@ message ".answer :me" do |message, params|
   post "ok, the answer is: #{params[:me]}"
 end
 
+message :exact => "!exit" do |message, params|
+  post "Bye Bye!"
+  close
+end
+
 ## You need a extern Google engine
 ## write your own or search github.com / rubyforge.org
 #message /\A\.google (.+)/im do |message, params|
