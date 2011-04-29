@@ -11,7 +11,7 @@ module Jabbot
     attr_reader :client
     attr_reader :users
 
-    Message = Struct.new(:user, :text, :time) do
+    Message = Struct.new(:user, :text, :time, :type) do
       def to_s
         "#{user}: #{text}"
       end
@@ -144,7 +144,7 @@ module Jabbot
         muc.on_message do |time, nick, text|
           if time.nil?
             begin
-              dispatch_messages(:message, [Message.new(nick, text, Time.now)]) unless nick == config[:nick]
+              dispatch_messages(:message, [Message.new(nick, text, Time.now, :public)]) unless nick == config[:nick]
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -155,7 +155,7 @@ module Jabbot
         muc.on_private_message do |time, nick, text|
           if time.nil?
             begin
-              dispatch_messages(:private, [Message.new(nick, text, Time.now)]) unless nick == config[:nick]
+              dispatch_messages(:private, [Message.new(nick, text, Time.now, :query)]) unless nick == config[:nick]
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -169,7 +169,7 @@ module Jabbot
           end
           if time.nil?
             begin
-              dispatch_messages(:join, [Message.new(nick, "join", Time.now)]) unless nick == config[:nick]
+              dispatch_messages(:join, [Message.new(nick, "join", Time.now, :join)]) unless nick == config[:nick]
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -181,7 +181,7 @@ module Jabbot
           @users.delete(nick)
           if time.nil?
             begin
-              dispatch_messages(:leave, [Message.new(nick, "leave", Time.now)])
+              dispatch_messages(:leave, [Message.new(nick, "leave", Time.now, :leave)])
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -192,7 +192,7 @@ module Jabbot
         muc.on_subject do |time, nick, subject|
           if time.nil?
             begin
-              dispatch_messages(:subject, [Message.new(nick, subject, Time.now)])
+              dispatch_messages(:subject, [Message.new(nick, subject, Time.now, :subject)])
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")

@@ -25,6 +25,9 @@ module Jabbot
     # blk     - The block to execute on successfull match
     def message(pattern = nil, options = {}, &blk)
       add_handler(:message, pattern, options, &blk)
+
+      # if :query => true, add this block for queries, too
+      add_handler(:private, pattern, options, &blk) if options && options[:query]
     end
 
     # Add query handler
@@ -104,6 +107,12 @@ module Jabbot
       if msg.is_a?(Hash) && msg.keys.size == 1
         to = msg.values.first
         msg = msg.keys.first
+      elsif to.kind_of?(Struct)
+        if to.type == :query
+          to = to.user
+        else
+          to = nil
+        end
       end
       bot.send_message(msg, to)
     end

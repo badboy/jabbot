@@ -12,7 +12,7 @@ require 'jabbot/handlers.rb'
 require 'jabbot/macros.rb'
 
 module Jabbot
-  VERSION = '0.3.1'
+  VERSION = '0.3.2-dev'
 
   @@app_file = lambda do
     ignore = [
