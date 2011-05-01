@@ -126,7 +126,7 @@ module Jabbot
 
     # Low-level method to add new Handler to the bot
     def add_handler(type, pattern, options, &blk)
-      bot.add_handler(type, Jabbot::Handler.new(pattern, options, &blk))
+      bot.add_handler(type, Jabbot::Handler.new(pattern.dup, options, &blk))
     end
 
     # Low-level method to create new instance of a bot
