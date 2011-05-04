@@ -133,7 +133,7 @@ module Jabbot
     # alternative: send query to user
     #
     def send_message(msg, to=nil)
-      @muc.say(msg.to_s, to)
+      @muc.say(msg.to_s, to) if connected?
     end
 
     #
