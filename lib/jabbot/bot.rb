@@ -2,6 +2,8 @@ require 'logger'
 require File.join(File.expand_path(File.dirname(__FILE__)), 'macros')
 require File.join(File.expand_path(File.dirname(__FILE__)), 'handlers')
 
+require 'eventmachine'
+
 module Jabbot
   #
   # Main bot "controller" class
@@ -64,6 +66,7 @@ module Jabbot
         $stderr.puts args.inspect
         $stderr.puts "exiting..."
 
+        EventMachine.stop_event_loop
         exit
       end
       @connected = true
@@ -95,18 +98,16 @@ module Jabbot
       Kernel.trap(:QUIT, onclose_block)
 
       debug! if config[:debug]
-      connect
-      poll
-    end
 
-    #
-    # just a lame infinite loop to keep the bot alive while he is connected
-    # :)
-    #
-    def poll
-      while connected?
-        break unless connected?
-        sleep 1
+      # connect the bot and keep it running
+      EventMachine.run do
+        connect
+
+        stop_timer = EventMachine.add_periodic_timer(1) do
+          if !connected?
+            EventMachine.stop_event_loop
+          end
+        end
       end
     end
 
