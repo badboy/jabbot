@@ -57,7 +57,7 @@ module Jabbot
       @handler = block_given? ? blk : nil
 
       # Set pattern (parse it if needed)
-      self.pattern = pattern
+      self.pattern = pattern.dup
     end
 
     #
