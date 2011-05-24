@@ -17,6 +17,17 @@ module Jabbot
       def to_s
         "#{user}: #{text}"
       end
+
+      # Encode a message in JSON
+      # A message is just a hash of its values
+      def to_json(*a)
+        {
+          :user => user,
+          :text => text,
+          :time => time,
+          :type => type
+        }.to_json(*a)
+      end
     end
 
     def initialize(options = nil)
