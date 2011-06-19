@@ -75,9 +75,7 @@ module Jabbot
     end
   end
 
-  #
-  # Configuration from files
-  #
+  # Deprecated: Configuration from files
   class FileConfig < Config
 
     #
@@ -87,6 +85,8 @@ module Jabbot
     # If a stream is passed it is not closed from within the method
     #
     def initialize(fos = File.expand_path("config/bot.yml"))
+      warn "Jabbot::FileConfig is deprecated and will be removed in the next version."
+
       stream = fos.is_a?(String) ? File.open(fos, "r") : fos
 
       begin

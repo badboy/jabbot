@@ -48,6 +48,8 @@ Jabbot uses the [at\_exit hook](http://ruby-doc.org/core/classes/Kernel.html#M00
 
 ### Configuration
 
+_Deprecated: The option to configure by YAML files will be removed in the next stable release._
+
 Jabbot looks for a configuration file in ./config/bot.yml. It should contain
 atleast:
 
