@@ -1,17 +1,30 @@
 module Jabbot
   module Handlers
+    # Public: Add a handler for a given type.
     #
-    # Add a handler for this bot
+    # type    - The Symbol representation of the type to be handled.
+    # handler - The Jabbot::Handler instance to handle a message.
     #
+    # Returns the handler.
     def add_handler(type, handler)
       handlers[type] << handler
       handler
     end
 
+    # Public: Dispatch a message based on is type.
+    #
+    # type    - The Symbol representation of the type to be dispatched.
+    # message - The String message to be handled.
+    #
+    # Returns nothing.
     def dispatch(type, message)
       handlers[type].each {|handler| handler.dispatch(message) }
     end
 
+    # Internal: Setup Arrays of all handler types.
+    #
+    # Returns a Hash containing the possible handler types and
+    #  its associated Arrays of handlers.
     def handlers
       @handlers ||= {
         :message => [],
@@ -22,15 +35,45 @@ module Jabbot
       }
     end
 
+    # Deprecated: Set the handler types and Arrays
+    #
+    # hash - A hash containing the handler types and associated Arrays
+    #        (see `handlers`).
+    #
+    # Returns nothing.
     def handlers=(hash)
       @handlers = hash
     end
   end
 
-  #
-  # A Handler object is an object which can handle any type of message
+  # A Handler consists of a pattern to match a given message,
+  # some options and a handler block to be called on dispatch.
   #
   class Handler
+    # Public: Initialize a new handler instance.
+    #
+    # pattern - The String, Symbol or Regexp pattern to match the messages
+    #           against or a Hash (default: nil).
+    #           If pattern is a Hash containing just one key :exact,
+    #           its value is used as the pattern and should therefore be
+    #           a String or Regexp.
+    #           If the pattern is a Hash, but not containing
+    #           the key :exact, the pattern is set to nil
+    #           and the passed value is re-used as `options`.
+    #           A pattern of nil will match every message.
+    # options - The Hash options to refine the handler (default: {})
+    #           :from - A String, Symbol or Array of usernames to
+    #                   accept messages from
+    #           *     - Any String here is later used in the pattern
+    #                   parsing and its value is used as a replacement
+    #                   of the pattern parameter and should be a
+    #                   valid String to be used in a Regexp,
+    #                   containing just one match group.
+    # blk     - The block to handle a pattern-matched message
+    #           and respond to it.
+    #           It will be passed to arguments:
+    #             message - The actual Message struct.
+    #             params  - An Array of matched params if any.
     def initialize(pattern = nil, options = {}, &blk)
       @exact_match = false
       if pattern.is_a?(Hash)
@@ -60,9 +103,44 @@ module Jabbot
       self.pattern = pattern ? pattern.dup : pattern
     end
 
+    # Internal: Parse pattern string and set parameter options.
     #
-    # Parse pattern string and set options
+    # There are a few special cases:
     #
+    # If the pattern is nil, empty or the Symbol :all, the handler is
+    # dispatched on all incoming messages for the given type.
+    #
+    # If the pattern is a Regexp it is used as-is.
+    #
+    # If the pattern is a String or any other Symbol (coerced to a String)
+    # it is parsed.
+    #
+    # Parsing:
+    #
+    # Every word in the pattern starting with a colon (:) and followed by
+    # any non-whitespace characters is used as a parameter match name.
+    #
+    # Matched pattern names are then replaced to match any
+    # non-whitespace character by default.
+    # Otherwise defined patterns may be used instead.
+    #
+    # If @exact_match is set, the resulting pattern is nested
+    # between \A and \Z to match a whole string without
+    # leading or trailing characters.
+    #
+    # Example:
+    #
+    #     handler.pattern = "Welcome :me"
+    #     # => /Welcome ([^\s]+)/
+    #
+    #     handler.pattern = "Welcome :me" # with @exact_match = true
+    #     # => /\AWelcome ([^\s]+)\Z/
+    #
+    #     options = { "me" => "([aeiou]+)" }
+    #     handler.pattern = "Welcome :me"
+    #     # => /Welcome ([aeiou]+)/
+    #
+    # Returns nothing.
     def pattern=(pattern)
       @pattern = nil
       return if pattern.nil? || pattern == '' || pattern == :all
@@ -89,9 +167,13 @@ module Jabbot
       end
     end
 
+    # Public: Get the pattern RegExp.
+    attr_reader :pattern
+
+    # Internal: Determines if this handler is suited to handle
+    #           an incoming message.
     #
-    # Determines if this handler is suited to handle an incoming message
-    #
+    # Returns a Boolean if it recognized the given message.
     def recognize?(message)
       return false if @pattern && message.text !~ @pattern
 
@@ -100,10 +182,11 @@ module Jabbot
       true
     end
 
+    # Public: Process a message to build params hash and handle it.
     #
-    # Process message to build params hash and pass message along with params of
-    # to +handle+
+    # message - The incoming String message.
     #
+    # Returns the response from `handle`.
     def dispatch(message)
       return unless recognize?(message)
       params = {}
@@ -118,13 +201,15 @@ module Jabbot
         params[:text] = message.text
       end
 
-      return handle(message, params)
+      handle(message, params)
     end
 
+    # Internal: Call the assigned message handler if any.
     #
-    # Handle a message. Calls the internal Proc with the message and the params
-    # hash as parameters.
+    # message - The incoming String message.
+    # params  - The hash containing matched tokens.
     #
+    # Returns the return from the handler block.
     def handle(message, params)
       @handler.call(message, params) if @handler
     end

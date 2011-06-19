@@ -1,7 +1,6 @@
 require 'optparse'
 
 module Jabbot
-  #
   # Jabbot configuration. Use either Jabbot::CliConfig.new or
   # JabbotFileConfig.new setup a new bot from either command line or file
   # (respectively). Configurations can be chained so they override each other:
@@ -36,19 +35,23 @@ module Jabbot
       @settings = settings
     end
 
+    # Public: Add a configuration object to override given settings
     #
-    # Add a configuration object to override given settings
+    # config -
     #
+    # Returns the class object.
     def add(config)
       @configs << config
       self
     end
-
     alias_method :<<, :add
 
+    # Internal: Maps calls to non existant functions to
+    #           configuration values, if they exist.
     #
-    # Makes it possible to access configuration settings as attributes
+    # name, *args and &block as described in the core classes.
     #
+    # Returns the configuration value if any.
     def method_missing(name, *args, &block)
       regex = /=$/
       attr_name = name.to_s.sub(regex, '').to_sym
@@ -61,9 +64,9 @@ module Jabbot
       @settings[attr_name]
     end
 
+    # Public: Merges configurations and returns a hash with all options
     #
-    # Merges configurations and returns a hash with all options
-    #
+    # Returns a Hash of the configuration.
     def to_hash
       hash = {}.merge(@settings)
       @configs.each { |conf| hash.merge!(conf.to_hash) }
@@ -77,13 +80,12 @@ module Jabbot
 
   # Deprecated: Configuration from files
   class FileConfig < Config
-
+    # Public: Initializes a new FileConfig object.
     #
-    # Accepts a stream or a file to read configuration from
-    # Default is to read configuration from ./config/bot.yml
     #
-    # If a stream is passed it is not closed from within the method
-    #
+    # fos - Accepts a Stream or a String filename to read configuration from
+    #       (default: "./config/bot.yml")
+    #       If a stream is passed it is not closed from within the method.
     def initialize(fos = File.expand_path("config/bot.yml"))
       warn "Jabbot::FileConfig is deprecated and will be removed in the next version."
 

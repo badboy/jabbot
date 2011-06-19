@@ -5,9 +5,9 @@ require File.join(File.expand_path(File.dirname(__FILE__)), 'handlers')
 require 'eventmachine'
 
 module Jabbot
+  # The main Bot class.
   #
-  # Main bot "controller" class
-  #
+  # It handles the connection as well as the method dispatching.
   class Bot
     include Jabbot::Handlers
     attr_reader :client
@@ -30,7 +30,10 @@ module Jabbot
       end
     end
 
-    def initialize(options = nil)
+    # Public: Initialize a Bot instance.
+    #
+    # options - A Jabbot::Config options instance (default: nil).
+    def initialize(options=nil)
       @conf = nil
       @config = options || Jabbot::Config.default << Jabbot::FileConfig.new
       @log = nil
@@ -41,18 +44,25 @@ module Jabbot
       raise SystemExit.new(krash.message)
     end
 
-    # Enable debugging mode.
+    # Internal: Enable debugging mode.
+    #
     # All xmpp4r-internal calls to Jabber::Debuglog are
     # printed to $stderr by default.
     # You may change the logger by using
+    #
     #   Jabber::Logger = Logger.new(…)
+    #
+    # Returns nothing.
     def debug!
       Jabber::debug = true
     end
 
+    # Internal: Connect to Jabber and join channel.
     #
-    # connect to Jabber and join channel
+    # It will exit the process and log any exception
+    # on `$stderr` on failure.
     #
+    # Returns nothing.
     def connect
       @jid = Jabber::JID.new(login)
       @mucjid = Jabber::JID.new("#{channel}@#{server}")
@@ -80,22 +90,27 @@ module Jabbot
         EventMachine.stop_event_loop
         exit
       end
-      @connected = true
       begin
         @client.connect
         @client.auth(password)
         @muc = Jabber::MUC::SimpleMUCClient.new(@client)
         muc_handlers.call(@muc)
         @muc.join(@mucjid)
-       rescue => errmsg
+        @connected = true
+      rescue => errmsg
+        @connected = false
         $stderr.write "#{errmsg.class}\n#{errmsg}, #{errmsg.backtrace.join("\n")}"
         exit 1
       end
     end
 
+    # Public: Starts the jabber bot.
     #
-    # Run application
+    # Internally it starts the jabber connection inside of `EventMachine.run`,
+    # so you are free to use all EventMachine tasks out there for asynchronously
+    # working on input data.
     #
+    # Returns nothing.
     def run!
       puts "Jabbot #{Jabbot::VERSION} imposing as #{login} on #{channel}@#{server}"
 
@@ -122,16 +137,16 @@ module Jabbot
       end
     end
 
+    # Internal: Get information if the bot is still connected.
     #
-    # still connected?
-    #
+    # Returns the connection state as a Boolean.
     def connected?
       @connected
     end
 
+    # Public: Close the server connection.
     #
-    # close connection
-    #
+    # Returns nothing.
     def close
       if connected?
         @connected = false
@@ -140,17 +155,27 @@ module Jabbot
     end
     alias_method :quit, :close
 
+    # Public: Send a message to a given user or publicly.
     #
-    # send message
-    # alternative: send query to user
+    # msg - A String message.
+    # to  - A String username to send to (default: nil).
     #
+    # Returns nothing.
     def send_message(msg, to=nil)
       @muc.say(msg.to_s, to) if connected?
     end
 
+    # Internal: Assigns handlers for different xmpp messages.
     #
-    # defines what to do on different actions
+    # The handled messages are:
     #
+    #   * public messages
+    #   * private messages
+    #   * joins
+    #   * leaves
+    #   * subject changes
+    #
+    # Returs nothing.
     def muc_handlers
       Proc.new do |muc|
         muc.on_message do |time, nick, text|
@@ -211,25 +236,23 @@ module Jabbot
             end
           end
         end
-
-        # not working
-        #muc.on_self_leave  do |*args|
-        #  p args
-        #end
       end
     end
 
+    # Dispatch a collection of messages.
     #
-    # Dispatch a collection of messages
+    # type     - The Symbol type to be processed.
+    # messages - An Array of String messages to be dispatched.
     #
+    # Returns the Integer count of messages dispatched.
     def dispatch_messages(type, messages)
       messages.each { |message| dispatch(type, message) }
       messages.length
     end
 
+    # Internal: Instanciates a logger.
     #
-    # Return logger instance
-    #
+    # Returns logger instance.
     def log
       return @log if @log
       os = config[:log_file] ? File.open(config[:log_file], "a") : $stdout
@@ -238,17 +261,18 @@ module Jabbot
       @log
     end
 
+    # Public: Set configure options for the bot.
     #
-    # Configure bot
-    #
+    # Returns the configure Hash.
     def configure
       yield @config
-      @conf = nil
+      @conf = @config.to_hash
     end
 
+    # Internal: Maps configuration settings to real methods.
     #
-    # Map configuration settings
-    #
+    # Returns the value of the configuration setting
+    #  or nil if none is found.
     def method_missing(name, *args, &block)
       return super unless config.key?(name)
 
@@ -256,9 +280,9 @@ module Jabbot
       config[name]
     end
 
+    # Public: Get the current configuration settings.
     #
-    # Return configuration
-    #
+    # Returns the configuration Hash.
     def config
       return @conf if @conf
       @conf = @config.to_hash
@@ -269,7 +293,7 @@ end
 # Expose DSL
 include Jabbot::Macros
 
-# Run bot if macros has been used
+# Run bot if macros has been used.
 at_exit do
   raise $! if $!
   @@bot.run! if run?
