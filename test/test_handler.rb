@@ -5,48 +5,48 @@ context "Handler" do
     handler = Jabbot::Handler.new
 
     handler.pattern = nil
-    assert_nil handler.instance_eval { @options[:pattern] }
-    assert_nil handler.instance_eval { @options[:tokens] }
+    assert_nil handler.pattern
+    assert_nil handler.instance_eval { @tokens }
 
     handler.pattern = ""
-    assert_nil handler.instance_eval { @options[:pattern] }
-    assert_nil handler.instance_eval { @options[:tokens] }
+    assert_nil handler.pattern
+    assert_nil handler.instance_eval { @tokens }
   end
 
   test "turn regular pattern into regex" do
     handler = Jabbot::Handler.new
     handler.pattern = "command"
 
-    assert_equal(/command(\s.+)?/, handler.instance_eval { @options[:pattern] })
-    assert_equal 0, handler.instance_eval { @options[:tokens] }.length
+    assert_equal(/command/, handler.pattern)
+    assert_equal 0, handler.instance_eval{ @tokens }.length
   end
 
   test "convert single named switch to regex" do
     handler = Jabbot::Handler.new
     handler.pattern = ":command"
 
-    assert_equal(/([^\s]+)(\s.+)?/, handler.instance_eval { @options[:pattern] })
-    assert_equal 1, handler.instance_eval { @options[:tokens] }.length
-    assert_equal :command, handler.instance_eval { @options[:tokens].first }
+    assert_equal(/([^\s]+)/, handler.pattern)
+    assert_equal 1, handler.instance_eval { @tokens }.length
+    assert_equal :command, handler.instance_eval { @tokens.first }
   end
 
   test "convert several named switches to regexen" do
     handler = Jabbot::Handler.new
     handler.pattern = ":command fixed_word :subcommand"
 
-    assert_equal(/([^\s]+) fixed_word ([^\s]+)(\s.+)?/, handler.instance_eval { @options[:pattern] })
-    assert_equal 2, handler.instance_eval { @options[:tokens] }.length
-    assert_equal :command, handler.instance_eval { @options[:tokens].first }
-    assert_equal :subcommand, handler.instance_eval { @options[:tokens][1] }
+    assert_equal(/([^\s]+) fixed_word ([^\s]+)/, handler.pattern)
+    assert_equal 2, handler.instance_eval { @tokens }.length
+    assert_equal :command, handler.instance_eval { @tokens.first }
+    assert_equal :subcommand, handler.instance_eval { @tokens[1] }
   end
 
   test "convert several named switches to regexen specified by options" do
     handler = Jabbot::Handler.new(":time :hour", :hour => /\d\d/)
 
-    assert_equal(/([^\s]+) ((?-mix:\d\d))(\s.+)?/, handler.instance_eval { @options[:pattern] })
-    assert_equal 2, handler.instance_eval { @options[:tokens] }.length
-    assert_equal :time, handler.instance_eval { @options[:tokens].first }
-    assert_equal :hour, handler.instance_eval { @options[:tokens][1] }
+    assert_equal(/([^\s]+) ((?-mix:\d\d))/, handler.pattern)
+    assert_equal 2, handler.instance_eval { @tokens }.length
+    assert_equal :time, handler.instance_eval { @tokens.first }
+    assert_equal :hour, handler.instance_eval { @tokens[1] }
   end
 
   test "recognize empty pattern" do
