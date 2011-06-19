@@ -27,7 +27,7 @@ and it works great :)
 
     # Respond to query if they come from the right crowd
     # query "message" => "user" is just some syntax sugar
-    # query "message", "user" will work to
+    # query "message", "user" will work, too
     query :from => [:cjno, :irbno] do |message, params|
       post "#{message.user} I agree" => message.user
     end
