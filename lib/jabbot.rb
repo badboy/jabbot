@@ -29,22 +29,21 @@ module Jabbot
     path || $0
   end.call
 
+  # Public: File name of the application file (inspired by Sinatra).
   #
-  # File name of the application file. Inspired by Sinatra
-  #
+  # Returns the String application filename.
   def self.app_file
     @@app_file
   end
 
+  # Public: Determines if the application should be auto-run.
   #
-  # Runs application if application file is the script being executed
-  #
+  # Returns a Boolean indicatin wether to auto-run the application or not.
   def self.run?
     self.app_file == $0
   end
 
-end  # module Jabbot
+end
 
+# xmpp4r runs in another thread.
 Thread.abort_on_exception = true
-
-# EOF
