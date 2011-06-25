@@ -64,7 +64,7 @@ You can also configure with Ruby:
     configure do |conf|
       conf.login = "my_account"
       conf.nick = "mybot"
-    do
+    end
 
 If you don't specify login and/or password in any of these ways, Jabbot will fail
 Nick is automatically set to "jabbot" unless something different is defined
@@ -113,6 +113,11 @@ You can get it via rubygems:
     gem install xmpp4r
 
 or get it from: http://home.gna.org/xmpp4r/
+
+... and eventmachine:
+
+    gem install eventmachine
+
 
 ## Installation
 
