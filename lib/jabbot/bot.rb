@@ -145,7 +145,7 @@ module Jabbot
 
       debug! if config.debug
 
-      # connect the bot and keep it running
+      # Connect the bot and keep it running.
       EventMachine.run do
         connect
 
@@ -195,11 +195,11 @@ module Jabbot
     #   * leaves
     #   * subject changes
     #
-    # Returs nothing.
+    # Returs a Proc to be called to assign the handlers.
     def muc_handlers
       Proc.new do |muc|
         muc.on_message do |time, nick, text|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:message, [Message.new(nick, text, Time.now, :public)]) unless nick == config.nick
             rescue Exception => boom
@@ -210,7 +210,7 @@ module Jabbot
         end
 
         muc.on_private_message do |time, nick, text|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:query, [Message.new(nick, text, Time.now, :query)]) unless nick == config.nick
             rescue Exception => boom
@@ -224,7 +224,7 @@ module Jabbot
           unless @users.include? nick
             @users << nick
           end
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:join, [Message.new(nick, "join", Time.now, :join)]) unless nick == config.nick
             rescue Exception => boom
@@ -236,7 +236,7 @@ module Jabbot
 
         muc.on_leave do |time, nick|
           @users.delete(nick)
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:leave, [Message.new(nick, "leave", Time.now, :leave)])
             rescue Exception => boom
@@ -247,7 +247,7 @@ module Jabbot
         end
 
         muc.on_subject do |time, nick, subject|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:subject, [Message.new(nick, subject, Time.now, :subject)])
             rescue Exception => boom
@@ -259,7 +259,7 @@ module Jabbot
       end
     end
 
-    # Dispatch a collection of messages.
+    # Internal: Dispatch a collection of messages.
     #
     # type     - The Symbol type to be processed.
     # messages - An Array of String messages to be dispatched.

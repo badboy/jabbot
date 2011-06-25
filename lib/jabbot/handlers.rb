@@ -29,20 +29,10 @@ module Jabbot
       @handlers ||= {
         :message => [],
         :private => [],
-        :join => [],
+        :join    => [],
         :subject => [],
-        :leave => []
+        :leave   => []
       }
-    end
-
-    # Deprecated: Set the handler types and Arrays
-    #
-    # hash - A hash containing the handler types and associated Arrays
-    #        (see `handlers`).
-    #
-    # Returns nothing.
-    def handlers=(hash)
-      @handlers = hash
     end
   end
 
@@ -171,9 +161,9 @@ module Jabbot
     attr_reader :pattern
 
     # Internal: Determines if this handler is suited to handle
-    #           an incoming message.
+    #           a message.
     #
-    # Returns a Boolean if it recognized the given message.
+    # Returns true if it recognized the given message, false otherwise.
     def recognize?(message)
       return false if @pattern && message.text !~ @pattern
 
@@ -208,6 +198,8 @@ module Jabbot
     #
     # message - The incoming String message.
     # params  - The hash containing matched tokens.
+    #
+    # Both arguments are passed to the underlying handler block.
     #
     # Returns the return from the handler block.
     def handle(message, params)
