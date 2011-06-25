@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |s|
   s.name           = "jabbot"
-  s.version        = "0.3.1"
-  s.date           = "2011-04-12"
+  s.version        = "0.3.2"
+  s.date           = Time.now.strftime("%Y-%m-%d")
   s.summary        = "Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot"
   s.homepage       = "http://github.com/badboy/jabbot"
   s.email          = "badboy@archlinux.us"
@@ -18,16 +18,13 @@ Gem::Specification.new do |s|
   heavily inspired by Sinatra and Twibot.
 
   I modified the code of Twibot to fit my needs.
-  The original Twibot code is located at:
-  http://github.com/cjohansen/twibot/tree/master
-
-  A big thank you to Christian Johansen, who wrote the code for Twibot.
-  Jabbot is heavily based on his code.
+  The original Twibot code by Christian Johansen is located at:
+  http://github.com/cjohansen/twibot
 
   It's as easy as definig a small message handler:
-    message do |message, params|
+    message {|message, params|
       post message.text
-    end
+    }
   desc
 
   s.add_dependency('xmpp4r', '~>0.4')
