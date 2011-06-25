@@ -5,6 +5,38 @@ require File.join(File.expand_path(File.dirname(__FILE__)), 'handlers')
 require 'eventmachine'
 
 module Jabbot
+  # A message consists of the username, the text, a time when it was received
+  # and the type of the message.
+  #
+  # The type could be one Symbol of:
+  #
+  #   * :public
+  #   * :query
+  #   * :join
+  #   * :leave
+  #   * :subject
+  #
+  Message = Struct.new(:user, :text, :time, :type) do
+    # Public: Converts the message to printable text.
+    #
+    # Returns a String containing the user's name and the text.
+    def to_s
+        "#{user}: #{text}"
+    end
+
+    # Public: Encode a message in JSON
+    #
+    # Returns the json-ified String of the Hash representation of this message.
+    def to_json(*a)
+      {
+        :user => user,
+        :text => text,
+        :time => time,
+        :type => type
+      }.to_json(*a)
+    end
+  end
+
   # The main Bot class.
   #
   # It handles the connection as well as the method dispatching.
@@ -13,29 +45,17 @@ module Jabbot
     attr_reader :client
     attr_reader :users
 
-    Message = Struct.new(:user, :text, :time, :type) do
-      def to_s
-        "#{user}: #{text}"
-      end
-
-      # Encode a message in JSON
-      # A message is just a hash of its values
-      def to_json(*a)
-        {
-          :user => user,
-          :text => text,
-          :time => time,
-          :type => type
-        }.to_json(*a)
-      end
-    end
 
     # Public: Initialize a Bot instance.
     #
-    # options - A Jabbot::Config options instance (default: nil).
-    def initialize(options=nil)
-      @conf = nil
-      @config = options || Jabbot::Config.default << Jabbot::FileConfig.new
+    # options - A Jabbot::Config options instance or a Hash of key-value
+    #           configuration options (default: {}).
+    def initialize(options={})
+      @config = if options.kind_of?(Jabbot::Config)
+        options
+      else
+        Jabbot::Config.new(options)
+      end
       @log = nil
       @abort = false
       @users = []
@@ -64,21 +84,21 @@ module Jabbot
     #
     # Returns nothing.
     def connect
-      @jid = Jabber::JID.new(login)
-      @mucjid = Jabber::JID.new("#{channel}@#{server}")
+      @jid = Jabber::JID.new(config.login)
+      @mucjid = Jabber::JID.new("#{config.channel}@#{config.server}")
 
       if @jid.node.nil?
         raise "Your Jabber ID must contain a user name and therefore contain one @ character."
       elsif @jid.resource
-        raise "If you intend to set a custom resource, put that in the right text field. Remove the slash!"
+        raise "If you intend to set a custom resource, define so in the config."
       elsif @mucjid.node.nil?
         raise "Please set a room name, e.g. myroom@conference.jabber.org"
       elsif @mucjid.resource
         raise "The MUC room must not contain a resource. Remove the slash!"
       else
-        @jid.resource = config[:resource] || "jabbot"
-        @mucjid.resource = config[:nick] || "jabbot"
-        @users << config[:nick]
+        @jid.resource = config.resource
+        @mucjid.resource = config.nick
+        @users << config.nick
       end
 
       @client = Jabber::Client.new(@jid)
@@ -92,7 +112,7 @@ module Jabbot
       end
       begin
         @client.connect
-        @client.auth(password)
+        @client.auth(config.password)
         @muc = Jabber::MUC::SimpleMUCClient.new(@client)
         muc_handlers.call(@muc)
         @muc.join(@mucjid)
@@ -112,7 +132,7 @@ module Jabbot
     #
     # Returns nothing.
     def run!
-      puts "Jabbot #{Jabbot::VERSION} imposing as #{login} on #{channel}@#{server}"
+      puts "Jabbot #{Jabbot::VERSION} imposing as #{config.login} on #{config.channel}@#{config.server}"
 
       onclose_block = proc {
         close
@@ -123,9 +143,9 @@ module Jabbot
       Kernel.trap(:INT, onclose_block)
       Kernel.trap(:QUIT, onclose_block)
 
-      debug! if config[:debug]
+      debug! if config.debug
 
-      # connect the bot and keep it running
+      # Connect the bot and keep it running.
       EventMachine.run do
         connect
 
@@ -175,13 +195,13 @@ module Jabbot
     #   * leaves
     #   * subject changes
     #
-    # Returs nothing.
+    # Returs a Proc to be called to assign the handlers.
     def muc_handlers
       Proc.new do |muc|
         muc.on_message do |time, nick, text|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
-              dispatch_messages(:message, [Message.new(nick, text, Time.now, :public)]) unless nick == config[:nick]
+              dispatch_messages(:message, [Message.new(nick, text, Time.now, :public)]) unless nick == config.nick
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -190,9 +210,9 @@ module Jabbot
         end
 
         muc.on_private_message do |time, nick, text|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
-              dispatch_messages(:private, [Message.new(nick, text, Time.now, :query)]) unless nick == config[:nick]
+              dispatch_messages(:query, [Message.new(nick, text, Time.now, :query)]) unless nick == config.nick
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -204,9 +224,9 @@ module Jabbot
           unless @users.include? nick
             @users << nick
           end
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
-              dispatch_messages(:join, [Message.new(nick, "join", Time.now, :join)]) unless nick == config[:nick]
+              dispatch_messages(:join, [Message.new(nick, "join", Time.now, :join)]) unless nick == config.nick
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
@@ -216,7 +236,7 @@ module Jabbot
 
         muc.on_leave do |time, nick|
           @users.delete(nick)
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:leave, [Message.new(nick, "leave", Time.now, :leave)])
             rescue Exception => boom
@@ -227,7 +247,7 @@ module Jabbot
         end
 
         muc.on_subject do |time, nick, subject|
-          if time.nil?
+          if time.nil? # Don't process messages from the past.
             begin
               dispatch_messages(:subject, [Message.new(nick, subject, Time.now, :subject)])
             rescue Exception => boom
@@ -239,7 +259,7 @@ module Jabbot
       end
     end
 
-    # Dispatch a collection of messages.
+    # Internal: Dispatch a collection of messages.
     #
     # type     - The Symbol type to be processed.
     # messages - An Array of String messages to be dispatched.
@@ -255,9 +275,9 @@ module Jabbot
     # Returns logger instance.
     def log
       return @log if @log
-      os = config[:log_file] ? File.open(config[:log_file], "a") : $stdout
+      os = config.log_file ? File.open(config.log_file, "a") : $stdout
       @log = Logger.new(os)
-      @log.level = Logger.const_get(config[:log_level] ? config[:log_level].upcase : "INFO")
+      @log.level = Logger.const_get(config.log_level ? config.log_level.upcase : "INFO")
       @log
     end
 
@@ -266,26 +286,13 @@ module Jabbot
     # Returns the configure Hash.
     def configure
       yield @config
-      @conf = @config.to_hash
-    end
-
-    # Internal: Maps configuration settings to real methods.
-    #
-    # Returns the value of the configuration setting
-    #  or nil if none is found.
-    def method_missing(name, *args, &block)
-      return super unless config.key?(name)
-
-      self.class.send(:define_method, name) { config[name] }
-      config[name]
     end
 
     # Public: Get the current configuration settings.
     #
     # Returns the configuration Hash.
     def config
-      return @conf if @conf
-      @conf = @config.to_hash
+      @config
     end
   end
 end

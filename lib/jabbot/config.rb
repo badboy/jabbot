@@ -1,108 +1,78 @@
-require 'optparse'
-
 module Jabbot
-  # Jabbot configuration. Use either Jabbot::CliConfig.new or
-  # JabbotFileConfig.new setup a new bot from either command line or file
-  # (respectively). Configurations can be chained so they override each other:
+  # Default configuration values.
+  # If an option is not set on creation,
+  # it gets the default value instead.
+  DEFAULT_CONFIG = {
+    :login     => nil,
+    :password  => nil,
+    :nick      => 'jabbot',
+    :server    => nil,
+    :channel   => nil,
+    :resource  => 'jabbot',
+    :log_level => 'info',
+    :log_file  => nil,
+    :debug     => false
+  }
+
+  # The main configuration of Jabbot.
+  # It's nothing more than a simple struct of key-value pairs.
   #
-  #   config = Jabbot::FileConfig.new
-  #   config << Jabbot::CliConfig.new
-  #   config.to_hash
+  # Examples:
   #
-  # The preceding example will create a configuration which is based on a
-  # configuration file but have certain values overridden from the command line.
-  # This can be used for instance to store everything but the Twitter account
-  # password in your configuration file. Then you can just provide the password
-  # when running the bot.
+  #   Jabbot::Config.new({:login => "jabbot@server.com", :password => "secret",
+  #                       :debug => true})
+  #   # => #<struct Jabbot::Config login="jabbot@server.com", password="secret",
+  #        nick="jabbot", server=nil, channel=nil, resource="jabbot",
+  #        log_level="info", log_file=nil, debug=true>
   #
-  class Config
-    attr_reader :settings
-
-    DEFAULT = {
-      :log_level => 'info',
-      :log_file => nil,
-      :login => nil,
-      :password => nil,
-      :nick => 'jabbot',
-      :channel => nil,
-      :server => nil,
-      :resource => nil,
-      :debug => false
-    }
-
-    def initialize(settings = {})
-      @configs = []
-      @settings = settings
-    end
-
-    # Public: Add a configuration object to override given settings
+  #   Jabbot::Config.new("jabbot@server.com", "secret")
+  #   # => #<struct Jabbot::Config login="jabbot@server.com", password="secret",
+  #        nick="jabbot", server=nil, channel=nil, resource="jabbot",
+  #        log_level="info", log_file=nil, debug=false>
+  #
+  #   config.login
+  #   # => "jabbot@server.com"
+  #   config.channel
+  #   # => nil
+  #   config.channel = "room@conference.server.com"
+  #   # => "room@conference.server.com"
+  #
+  Config = Struct.new(
+    # We need the correct order here, so this is done manually.
+    :login,
+    :password,
+    :nick,
+    :server,
+    :channel,
+    :resource,
+    :log_level,
+    :log_file,
+    :debug
+  ) do
+    # Public: Initialize new configuration object.
     #
-    # config -
-    #
-    # Returns the class object.
-    def add(config)
-      @configs << config
-      self
-    end
-    alias_method :<<, :add
+    # *args - Any number of valid arguments passed to the super class.
+    #         If there is only one argument and it is kind of a Hash,
+    #         it is treated as the key-value pairs are the options.
+    #         If there is a default value for an option key,
+    #         it is set if needed.
+    def initialize(*args)
+      # First: call the super class.
+      super
 
-    # Internal: Maps calls to non existant functions to
-    #           configuration values, if they exist.
-    #
-    # name, *args and &block as described in the core classes.
-    #
-    # Returns the configuration value if any.
-    def method_missing(name, *args, &block)
-      regex = /=$/
-      attr_name = name.to_s.sub(regex, '').to_sym
-      return super if name == attr_name && !@settings.key?(attr_name)
+      # If we got a hash, treat it as the configuration options.
+      if args.size == 1 && args.first.kind_of?(Hash)
+        self.login = nil # Reset first value.
 
-      if name != attr_name
-        @settings[attr_name] = args.first
+        args.first.each do |key, value|
+          send("#{key}=", value)
+        end
       end
 
-      @settings[attr_name]
-    end
-
-    # Public: Merges configurations and returns a hash with all options
-    #
-    # Returns a Hash of the configuration.
-    def to_hash
-      hash = {}.merge(@settings)
-      @configs.each { |conf| hash.merge!(conf.to_hash) }
-      hash
-    end
-
-    def self.default
-      Config.new({}.merge(DEFAULT))
-    end
-  end
-
-  # Deprecated: Configuration from files
-  class FileConfig < Config
-    # Public: Initializes a new FileConfig object.
-    #
-    #
-    # fos - Accepts a Stream or a String filename to read configuration from
-    #       (default: "./config/bot.yml")
-    #       If a stream is passed it is not closed from within the method.
-    def initialize(fos = File.expand_path("config/bot.yml"))
-      warn "Jabbot::FileConfig is deprecated and will be removed in the next version."
-
-      stream = fos.is_a?(String) ? File.open(fos, "r") : fos
-
-      begin
-        config = YAML.load(stream.read)
-        config.symbolize_keys! if config
-      rescue Exception => err
-        puts err.message
-        puts "Unable to load configuration, aborting"
-        exit
-      ensure
-        stream.close if fos.is_a?(String)
+      # Set defaults.
+      DEFAULT_CONFIG.each do |key, value|
+        self.send(key.to_s) || self.send("#{key}=", value)
       end
-
-      super config.is_a?(Hash) ? config : {}
     end
   end
 end
