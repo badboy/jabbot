@@ -6,14 +6,13 @@ require 'xmpp4r/version/helper/simpleresponder'
 require 'yaml'
 require File.join(File.dirname(__FILE__), 'hash')
 
+require 'jabbot/version.rb'
 require 'jabbot/bot.rb'
 require 'jabbot/config.rb'
 require 'jabbot/handlers.rb'
 require 'jabbot/macros.rb'
 
 module Jabbot
-  VERSION = '0.4.0dev'
-
   @@app_file = lambda do
     ignore = [
       /lib\/twibot.*\.rb/, # Library

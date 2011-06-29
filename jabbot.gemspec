@@ -1,8 +1,10 @@
 # -*- encoding: utf-8 -*-
 
+require './lib/jabbot/version'
+
 Gem::Specification.new do |s|
   s.name           = "jabbot"
-  s.version        = "0.3.2"
+  s.version        = Jabbot::VERSION
   s.date           = Time.now.strftime("%Y-%m-%d")
   s.summary        = "Simple framework for creating Jabber/MUC bots, inspired by Sinatra and Twibot"
   s.homepage       = "http://github.com/badboy/jabbot"
