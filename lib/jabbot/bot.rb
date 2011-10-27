@@ -294,6 +294,13 @@ module Jabbot
     def config
       @config
     end
+
+    # Public: Easy access to the bot's nickname
+    #
+    # Returns the configured nick String.
+    def nick
+      @config.nick
+    end
   end
 end
 
