@@ -141,7 +141,7 @@ module Jabbot
       }
 
       Kernel.trap(:INT, onclose_block)
-      Kernel.trap(:QUIT, onclose_block)
+      Kernel.trap(:QUIT, onclose_block) rescue nil
 
       debug! if config.debug
 
@@ -212,7 +212,7 @@ module Jabbot
         muc.on_private_message do |time, nick, text|
           if time.nil? # Don't process messages from the past.
             begin
-              dispatch_messages(:query, [Message.new(nick, text, Time.now, :query)]) unless nick == config.nick
+              dispatch_messages(:private, [Message.new(nick, text, Time.now, :private)]) unless nick == config.nick
             rescue Exception => boom
               log.fatal boom.inspect
               log.fatal boom.backtrace[0..5].join("\n")
