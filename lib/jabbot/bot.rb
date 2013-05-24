@@ -21,7 +21,7 @@ module Jabbot
     #
     # Returns a String containing the user's name and the text.
     def to_s
-        "#{user}: #{text}"
+      "#{user}: #{text}"
     end
 
     # Public: Encode a message in JSON
