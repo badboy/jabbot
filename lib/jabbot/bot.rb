@@ -11,7 +11,7 @@ module Jabbot
   # The type could be one Symbol of:
   #
   #   * :public
-  #   * :query
+  #   * :private
   #   * :join
   #   * :leave
   #   * :subject
