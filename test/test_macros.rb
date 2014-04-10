@@ -6,7 +6,7 @@ context "Macros" do
   end
 
   test "yield configuration" do
-    Jabbot::Macros.bot = Jabbot::Bot.new Jabbot::Config.default
+    Jabbot::Macros.bot = Jabbot::Bot.new
 
     conf = nil
     assert_nothing_raised { configure { |c| conf = c } }
@@ -14,7 +14,7 @@ context "Macros" do
   end
 
   test "add handler" do
-    Jabbot::Macros.bot = Jabbot::Bot.new Jabbot::Config.default
+    Jabbot::Macros.bot = Jabbot::Bot.new
 
     handler = add_handler(:message, ":command", :from => :cjno)
     assert handler.is_a?(Jabbot::Handler)

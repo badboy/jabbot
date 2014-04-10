@@ -2,49 +2,21 @@ require 'helper'
 require 'fileutils'
 
 context "Bot" do
-  test "raise no exceptions when initialized" do
-    assert_nothing_raised do
-      Jabbot::Bot.new Jabbot::Config.new
-    end
-  end
-
-  test "raise exception when initialized without config file" do
-    assert_raise SystemExit do
-      Jabbot::Bot.new
-    end
-  end
-
-  test "raise no exception on initialize when config file exists" do
-    if File.exists?("config")
-      FileUtils.rm("config/bot.yml")
-    else
-      FileUtils.mkdir("config")
-    end
-
-    File.open("config/bot.yml", "w") { |f| f.puts "" }
-
-    assert_nothing_raised do
-      Jabbot::Bot.new
-    end
-
-    FileUtils.rm_rf("config")
-  end
-
   test "provide configuration settings as methods" do
-    bot = Jabbot::Bot.new Jabbot::Config.new(:login => "jabbot")
-    assert_equal "jabbot", bot.login
+    bot = Jabbot::Bot.new :login => "jabbot"
+    assert_equal "jabbot", bot.config.login
   end
 
   test "return logger instance" do
-    bot = Jabbot::Bot.new(Jabbot::Config.default << Jabbot::Config.new)
+    bot = Jabbot::Bot.new
     assert bot.log.is_a?(Logger)
   end
 
   test "respect configured log level" do
-    bot = Jabbot::Bot.new(Jabbot::Config.new(:log_level => "info"))
+    bot = Jabbot::Bot.new(:log_level => "info")
     assert_equal Logger::INFO, bot.log.level
 
-    bot = Jabbot::Bot.new(Jabbot::Config.new(:log_level => "warn"))
+    bot = Jabbot::Bot.new(:log_level => "warn")
     assert_equal Logger::WARN, bot.log.level
   end
 end
