@@ -115,7 +115,11 @@ module Jabbot
         @client.auth(config.password)
         @muc = Jabber::MUC::SimpleMUCClient.new(@client)
         muc_handlers.call(@muc)
-        @muc.join(@mucjid)
+        if #{config.channelpw} == nil
+            @muc.join(@mucjid)
+        else
+            @muc.join(@mucjid, "#{config.channel}")
+        end
         @connected = true
       rescue => errmsg
         @connected = false
