@@ -2,79 +2,79 @@
 
 ## Description
 
-Jabbot is a Ruby micro-framework for creating Jabber/MUC bots,
-heavily inspired by Sinatra and Twibot.
+Jabbot is a Ruby micro-framework for creating Jabber/MUC bots, heavily inspired by Sinatra and Twibot.
 
-I modified the code of Twibot to fit my needs.
-The original Twibot code is located at:
-http://github.com/cjohansen/twibot/tree/master
+I modified the code of Twibot to fit my needs. The original Twibot code is located at: <http://github.com/cjohansen/twibot>
 
-A big thank you to Christian Johansen, who wrote the code for Twibot.
-Jabbot is heavily based on his code.
+A big thank you to Christian Johansen, who wrote the code for Twibot. Jabbot is heavily based on his code.
 
 If your curious if this code is stable enough:
-I have a bot instance running on my server for quite some time now
-and it works great :)
+I have a bot instance running on my server for years now and it works great :)
+
+Just keep in mind that the code is not the most beautiful, maybe has bugs or rough edges. Feel free to improve it. I use it as is.
+
 
 ## Usage
 
 ### Simple example
 
-    # Receive messages, and post them publicly
-    message do |message, params|
-      post message.text
-    end
+~~~ruby
+configure do |conf|
+  conf.login    = "my_account"
+  conf.password = "my_account"
+  conf.nick     = "mybot"
+  conf.channel  = "mychannel"
+end
 
-    # Respond to query if they come from the right crowd
-    # query "message" => "user" is just some syntax sugar
-    # query "message", "user" will work, too
-    query :from => [:cjno, :irbno] do |message, params|
-      post "#{message.user} I agree" => message.user
-    end
+# Receive messages, and post them publicly
+message do |message, params|
+  post message.text
+end
 
-    # Log every single line
-    # (you can use "message :all" too ;)
-    message do |message, params|
-      MyApp.log_message(message)
-    end
+# Respond to query if they come from the right crowd
+# query "message" => "user" is just some syntax sugar
+# query "message", "user" will work, too
+query :from => [:cjno, :irbno] do |message, params|
+  post "#{message.user} I agree" => message.user
+end
+
+# Log every single line
+# (you can use "message :all" too ;)
+message do |message, params|
+  MyApp.log_message(message)
+end
+~~~
 
 ### Running the bot
 
 To run the bot, simply do:
 
-    ruby bot.rb
+~~~
+ruby bot.rb
+~~~
 
 Jabbot uses the [at\_exit hook](http://ruby-doc.org/core/classes/Kernel.html#M005932) to start.
 
 ### Configuration
 
-_Deprecated: The option to configure by YAML files will be removed in the next stable release._
+You have to configure your bot via ruby:
 
-Jabbot looks for a configuration file in ./config/bot.yml. It should contain
-atleast:
+~~~ruby
+configure do |conf|
+  conf.login = "my_account"
+  conf.nick = "mybot"
+end
+~~~
 
-    login: jabber_login
-    password: jabber_password
-    channel: channel_to_join
-    server: server_to_connect_to
-    nick: mybot
+If you don't specify login and/or password in any of these ways, Jabbot will fail. The nick is automatically set to "jabbot" unless something different is defined. If you want you can set the XMPP Resource:
 
-You can also configure with Ruby:
+~~~ruby
+configure do |conf|
+  conf.resource ="mybot_resource"
+end
+~~~
 
-    configure do |conf|
-      conf.login = "my_account"
-      conf.nick = "mybot"
-    end
-
-If you don't specify login and/or password in any of these ways, Jabbot will fail
-Nick is automatically set to "jabbot" unless something different is defined
-If you want you can set the XMPP Resource:
-
-    configure do |conf|
-      conf.resource ="mybot_resource"
-    end
-
-Default is "jabbot".
+Default resource is "jabbot".
 
 ### "Routes"
 
@@ -91,44 +91,45 @@ Every matching block will be called.
 
 Jabbot also supports regular expressions as routes:
 
-    message /^time ([^\s]*) ([^\s]*)/ do |message, params|
-      # params is an array of matches when using regexp routes
-      time = MyTimeService.lookup(params[0], params[1])
-      post "Time is #{time} in #{params[:city]}, #{params[:country]}"
-    end
+~~~ruby
+message /^time ([^\s]*) ([^\s]*)/ do |message, params|
+  # params is an array of matches when using regexp routes
+  time = MyTimeService.lookup(params[0], params[1])
+  post "Time is #{time} in #{params[:city]}, #{params[:country]}"
+end
+~~~
 
 If all you need is exact word matching you can say so:
 
-    message :exact => "pattern" do |message, params|
-      ...
-    end
+~~~ruby
+message :exact => "pattern" do |message, params|
+  ...
+end
+~~~
 
 Internally this pattern is translated to `/\Apattern\Z/`, so you can use regex literals.
 
 ## Requirements
 
-xmpp4r. You'll need atleast 0.4.
-You can get it via rubygems:
-
-    gem install xmpp4r
-
-or get it from: http://home.gna.org/xmpp4r/
-
-... and eventmachine:
-
-    gem install eventmachine
+* xmpp4r. You'll need atleast 0.4. You can get it via rubygems: `gem install xmpp4r`
+* eventmachine. `gem install eventmachine`
 
 
 ## Installation
 
 Jabbot is available via gem:
 
-    gem install jabbot
+~~~
+gem install jabbot
+~~~
 
 ## Is it Ruby 1.9?
 
-All tests passes on Ruby 1.9.
-Seems like it works :)
+Absolutely! I run it on 1.9.3 without problems (thanks to the updated xmpp4r).
+
+## Is it Ruby 2.x?
+
+It should, test pass. I'm not sure if it will work as expected.
 
 ## Samples
 
@@ -150,10 +151,6 @@ The code is released under the MIT license. See [LICENSE][].
 If you'd like to hack on jabbot, start by forking my repo on GitHub:
 
 http://github.com/badboy/jabbot
-
-jabbot needs xmpp4r, so just install it:
-
-    gem install xmpp4r
 
 Then:
 
