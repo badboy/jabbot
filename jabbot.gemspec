@@ -31,5 +31,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency('xmpp4r', '~>0.4')
   s.add_dependency('eventmachine', '~>0.12')
-  s.add_development_dependency('shoulda', '>=2.10.1')
+  s.add_development_dependency('shoulda', '~>2.10.1')
 end
