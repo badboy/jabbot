@@ -3,15 +3,16 @@ module Jabbot
   # If an option is not set on creation,
   # it gets the default value instead.
   DEFAULT_CONFIG = {
-    :login     => nil,
-    :password  => nil,
-    :nick      => 'jabbot',
-    :server    => nil,
-    :channel   => nil,
-    :resource  => 'jabbot',
-    :log_level => 'info',
-    :log_file  => nil,
-    :debug     => false
+    :login            => nil,
+    :password         => nil,
+    :nick             => 'jabbot',
+    :server           => nil,
+    :channel          => nil,
+    :channel_password => nil,
+    :resource         => 'jabbot',
+    :log_level        => 'info',
+    :log_file         => nil,
+    :debug            => false
   }
 
   # The main configuration of Jabbot.
@@ -44,6 +45,7 @@ module Jabbot
     :nick,
     :server,
     :channel,
+    :channel_password,
     :resource,
     :log_level,
     :log_file,
