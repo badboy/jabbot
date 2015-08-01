@@ -9,7 +9,7 @@ context "Macros" do
     Jabbot::Macros.bot = Jabbot::Bot.new
 
     conf = nil
-    assert_nothing_raised { configure { |c| conf = c } }
+    configure { |c| conf = c } 
     assert conf.is_a?(Jabbot::Config)
   end
 

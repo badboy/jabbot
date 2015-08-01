@@ -14,7 +14,7 @@ context "Config" do
 
     val = "jabbot"
     config.login = val+'!'
-    assert_not_equal Jabbot::DEFAULT_CONFIG[:login], config.login
+    refute_equal Jabbot::DEFAULT_CONFIG[:login], config.login
     assert_equal val+'!', config.login
   end
 end
