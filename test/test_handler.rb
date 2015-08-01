@@ -153,7 +153,7 @@ context "Handler" do
       raise "Boom!"
     end
 
-    assert_raise(RuntimeError) do
+    assert_raises(RuntimeError) do
       handler.handle(nil, nil)
     end
   end

@@ -25,12 +25,12 @@ context "Handler DSL" do
   test "include handlers" do
     bot = Jabbot::Bot.new(Jabbot::Config.new)
 
-    assert_not_nil bot.handlers
-    assert_not_nil bot.handlers[:message]
-    assert_not_nil bot.handlers[:private]
-    assert_not_nil bot.handlers[:join]
-    assert_not_nil bot.handlers[:leave]
-    assert_not_nil bot.handlers[:subject]
+    refute_nil bot.handlers
+    refute_nil bot.handlers[:message]
+    refute_nil bot.handlers[:private]
+    refute_nil bot.handlers[:join]
+    refute_nil bot.handlers[:leave]
+    refute_nil bot.handlers[:subject]
   end
 
   test "add handler" do

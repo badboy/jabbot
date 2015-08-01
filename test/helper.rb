@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'test/unit'
+require "minitest/autorun"
 require 'shoulda'
 require 'fileutils'
 
@@ -15,8 +15,7 @@ require 'jabbot'
 # file:lib/test/spec/mini.rb
 def context(*args, &block)
   return super unless (name = args.first) && block
-  require 'test/unit'
-  klass = Class.new(Test::Unit::TestCase) do
+  klass = Class.new(Minitest::Test) do
     def self.test(name, &block)
       define_method("test_#{name.gsub(/\W/,'_')}", &block) if block
     end
