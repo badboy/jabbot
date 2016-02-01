@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
     }
   desc
 
-  s.add_dependency('xmpp4r')
-  s.add_dependency('eventmachine')
-  s.add_development_dependency('shoulda', '~>2.10.1')
+  s.add_dependency('xmpp4r', '~> 0.5', '>= 0.5.6')
+  s.add_dependency('eventmachine', '~> 1.0', '>= 1.0.9.1')
+  s.add_development_dependency('shoulda', '~> 2.10', '>= 2.10.1')
 end
